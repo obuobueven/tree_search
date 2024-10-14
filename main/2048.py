@@ -6,7 +6,65 @@
 # 3. 移动数字
 # 4. 判断游戏是否结束
 
+# 导入必要的模块
 import random
+
+import pygame
+
+class GameInterface:
+    def __init__(self, block_size=100, block_spacing=20, background_color=(139, 69, 19), block_color=(255, 255, 0)):
+        self.block_size = block_size
+        self.block_spacing = block_spacing
+        self.background_color = background_color
+        self.block_color = block_color
+        self.window_size = (4 * block_size + 5 * block_spacing, 4 * block_size + 5 * block_spacing)
+        self.window_title = "2048 Game"
+        self.screen = None
+
+    def initialize_window(self):
+        """初始化Pygame窗口"""
+        try:
+            pygame.init()
+            self.screen = pygame.display.set_mode(self.window_size)
+            pygame.display.set_caption(self.window_title)
+            self.draw_background()
+
+        except Exception as e:
+            print(f"初始化窗口时发生错误: {e}")
+
+    def draw_background(self):
+        """绘制背景和子块"""
+        self.screen.fill(self.background_color)
+        for i in range(4):
+            for j in range(4):
+                x = i * (self.block_size + self.block_spacing) + self.block_spacing
+                y = j * (self.block_size + self.block_spacing) + self.block_spacing
+                pygame.draw.rect(self.screen, self.block_color, (x, y, self.block_size, self.block_size))
+        pygame.display.flip()
+    
+    # 绘制数字
+    def draw_number(self, x, y, num):
+        """在指定位置绘制数字"""
+        font = pygame.font.Font(None, 40)  # 设置字体和字号
+        text = font.render(str(num), True, (0, 0, 0))  # 绘制数字
+        text_rect = text.get_rect()
+        text_x = (x + 0.5)* self.block_size + (x + 1) * self.block_spacing   # 设置数字的x坐
+        text_y = (y + 0.5)* self.block_size + (y + 1) * self.block_spacing   # 设置数字的y坐
+        text_rect.center = (text_x, text_y)  # 设置数字的位置
+        self.screen.blit(text, text_rect)  # 绘制数字
+        pygame.display.flip()
+
+    def run(self):
+        """运行游戏主循环"""
+        try:
+            running = True
+            while running:
+                for event in pygame.event.get():
+                    if event.type == pygame.QUIT:
+                        running = False
+            pygame.quit()  # 结束游戏时退出Pygame
+        except Exception as e:
+            print(f"运行游戏时发生错误: {e}")
 
 class Game:
     def __init__(self):
@@ -143,6 +201,7 @@ class Game:
                 self.print_map()
 
                 # 判断游戏是否结束
+            self.end_game()
 
         except Exception as e:
             print(f"发生错误: {e}")
@@ -151,12 +210,17 @@ class Game:
         # 结束游戏的逻辑
         print("游戏结束！")
 
+#if __name__ == '__main__':
 
+    """
+    game = Game()
+    print("初始状态：")
+    game.print_map()
+    game.run()
+    """
 
-game = Game()
-print("初始状态：")
-game.print_map()
-
-game.run()
-
+if __name__ == '__main__':
+    game_interface = GameInterface()
+    game_interface.initialize_window()
+    game_interface.run()
 
